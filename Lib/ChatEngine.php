@@ -52,6 +52,20 @@ class ChatEngine
             }
         }
 
+        if ($response['unknown']) {
+            $this->findAlternativeKnowledge($response, $question);
+        }
+
         return $response;
+    }
+
+    /**
+     * 
+     * @param array  $response
+     * @param string $question
+     */
+    protected function findAlternativeKnowledge(&$response, $question)
+    {
+        ;
     }
 }

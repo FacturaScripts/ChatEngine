@@ -19,7 +19,7 @@
 namespace FacturaScripts\Plugins\ChatEngine\Controller;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
-use FacturaScripts\Plugins\ChatEngine\Lib\ChatEngine;
+use FacturaScripts\Dinamic\Lib\ChatEngine;
 use FacturaScripts\Plugins\webportal\Lib\WebPortal\PortalController;
 use FacturaScripts\Plugins\ChatEngine\Model\ChatMessage;
 use FacturaScripts\Plugins\ChatEngine\Model\ChatSession;

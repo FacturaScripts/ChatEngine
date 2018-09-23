@@ -87,18 +87,16 @@ class ChatKnowledge extends Base\ModelClass
 
         $match = 0;
         foreach ($keywords as $keys) {
+            $found = false;
             foreach ($keys as $key) {
-                if (false !== stripos($question, $key)) {
-                    $match++;
+                /// same or similar word
+                if (false !== stripos($question, $key) || $this->deepMatch($question, $key)) {
+                    $found = true;
                     break;
                 }
-
-                $match = 0;
             }
 
-            if (!$match) {
-                break;
-            }
+            $match = $found ? $match + 1 : 0;
         }
 
         /// banned words
@@ -157,6 +155,34 @@ class ChatKnowledge extends Base\ModelClass
     public function url(string $type = 'auto', string $list = 'ListChatSession?activetab=List')
     {
         return parent::url($type, $list);
+    }
+
+    /**
+     * 
+     * @param string $question
+     * @param string $word
+     *
+     * @return boolean
+     */
+    protected function deepMatch($question, $word)
+    {
+        $changes = array('/à/' => 'a', '/á/' => 'a', '/â/' => 'a', '/ã/' => 'a', '/ä/' => 'a',
+            '/å/' => 'a', '/æ/' => 'ae', '/ç/' => 'c', '/è/' => 'e', '/é/' => 'e', '/ê/' => 'e',
+            '/ë/' => 'e', '/ì/' => 'i', '/í/' => 'i', '/î/' => 'i', '/ï/' => 'i', '/ð/' => 'd',
+            '/ñ/' => 'n', '/ò/' => 'o', '/ó/' => 'o', '/ô/' => 'o', '/õ/' => 'o', '/ö/' => 'o',
+            '/ő/' => 'o', '/ø/' => 'o', '/ù/' => 'u', '/ú/' => 'u', '/û/' => 'u', '/ü/' => 'u',
+            '/ű/' => 'u', '/ý/' => 'y', '/þ/' => 'th', '/ÿ/' => 'y',
+            '/&quot;/' => '-'
+        );
+        $text = preg_replace(array_keys($changes), $changes, strtolower($question));
+        $key = preg_replace(array_keys($changes), $changes, strtolower($word));
+
+        if (false !== strpos($text, $key)) {
+            return true;
+        }
+
+        $distance = levenshtein($text, $key);
+        return $distance == 1;
     }
 
     /**
