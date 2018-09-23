@@ -62,5 +62,8 @@ class ListChatSession extends ExtendedController\ListController
         $this->addFilterCheckbox('ListChatMessage', 'unmatched', 'unmatched', 'unmatched');
         $this->addFilterCheckbox('ListChatMessage', 'ischatbot', 'chatbot', 'ischatbot');
         $this->addFilterCheckbox('ListChatMessage', 'nochatbot', 'human', 'ischatbot', true);
+
+        /// knowledge
+        $this->addView('ListChatKnowledge', 'ChatKnowledge', 'chat-knowledge', 'fa-database');
     }
 }

@@ -39,7 +39,7 @@ class ChatMessage extends Base\ModelClass
     public $content;
 
     /**
-     * Creation time, in seconds.
+     * Creation time.
      *
      * @var int
      */

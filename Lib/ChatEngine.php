@@ -18,6 +18,8 @@
  */
 namespace FacturaScripts\Plugins\ChatEngine\Lib;
 
+use FacturaScripts\Plugins\ChatEngine\Model\ChatKnowledge;
+
 /**
  * Description of ChatEngine
  *
@@ -26,12 +28,29 @@ namespace FacturaScripts\Plugins\ChatEngine\Lib;
 class ChatEngine
 {
 
+    /**
+     * 
+     * @param string $question
+     *
+     * @return array
+     */
     public function ask($question)
     {
         $response = [
-            'text' => $question,
+            'match' => 0,
+            'text' => 'Lo siento, no puedo entenderte.',
             'unknown' => true,
         ];
+
+        $chatKnowledge = new ChatKnowledge();
+        foreach ($chatKnowledge->all() as $knowledge) {
+            $match = $knowledge->match($question);
+            if ($match > $response['match']) {
+                $response['match'] = $match;
+                $response['text'] = $knowledge->answer;
+                $response['unknown'] = false;
+            }
+        }
 
         return $response;
     }
