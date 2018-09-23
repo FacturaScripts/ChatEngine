@@ -51,7 +51,7 @@ class ChatMessage extends Base\ModelClass
      * @var int
      */
     public $idchat;
-    
+
     /**
      *
      * @var int
@@ -134,7 +134,7 @@ class ChatMessage extends Base\ModelClass
      */
     public function timesince()
     {
-        $time = time() - $this->creationtime;
+        $time = time() - strtotime($this->creationtime);
         $finalTime = ($time < 1) ? 1 : $time;
         $tokens = array(
             31536000 => 'year',

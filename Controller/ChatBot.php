@@ -19,6 +19,7 @@
 namespace FacturaScripts\Plugins\ChatEngine\Controller;
 
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Plugins\ChatEngine\Lib\ChatEngine;
 use FacturaScripts\Plugins\webportal\Lib\WebPortal\PortalController;
 use FacturaScripts\Plugins\ChatEngine\Model\ChatMessage;
 use FacturaScripts\Plugins\ChatEngine\Model\ChatSession;
@@ -88,11 +89,6 @@ class ChatBot extends PortalController
         $this->processChat();
     }
 
-    protected function answerUnknown()
-    {
-        ;
-    }
-
     /**
      * Return all chat messages with this user.
      */
@@ -153,7 +149,7 @@ class ChatBot extends PortalController
         if ($chatMessage->save()) {
             $this->messages[] = $chatMessage;
 
-            $this->session->lastmodtime = time();
+            $this->session->lastmodtime = $chatMessage->creationtime;
             $this->session->save();
         }
     }
@@ -169,13 +165,10 @@ class ChatBot extends PortalController
             return;
         }
 
-        $botMessage = 'XXXX';
-        if ('' === $botMessage) {
-            $this->newChatMessage($userInput, true);
-            $this->answerUnknown();
-        } else {
-            $this->newChatMessage($userInput);
-            $this->newChatMessage($botMessage, false, true);
-        }
+        $this->newChatMessage($userInput);
+
+        $engine = new ChatEngine();
+        $response = $engine->ask($userInput);
+        $this->newChatMessage($response['text'], $response['unknown'], true);
     }
 }

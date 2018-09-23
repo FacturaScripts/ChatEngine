@@ -111,33 +111,4 @@ class ChatSession extends Base\ModelClass
         $this->content = Utils::noHtml($this->content);
         return parent::test();
     }
-
-    /**
-     * Return time since now.
-     *
-     * @return string
-     */
-    public function timesince()
-    {
-        $time = time() - $this->lastmodtime;
-        $finalTime = ($time < 1) ? 1 : $time;
-        $tokens = array(
-            31536000 => 'year',
-            2592000 => 'month',
-            604800 => 'week',
-            86400 => 'day',
-            3600 => 'hour',
-            60 => 'minute',
-            1 => 'second'
-        );
-
-        foreach ($tokens as $unit => $text) {
-            if ($finalTime < $unit) {
-                continue;
-            }
-
-            $numberOfUnits = floor($finalTime / $unit);
-            return $numberOfUnits . ' ' . $text . (($numberOfUnits > 1) ? 's' : '');
-        }
-    }
 }
