@@ -1,6 +1,7 @@
 {% extends "Master/PortalTemplate.html.twig" %}
 
 {% block body %}
+    {% import _self as macros %}
     <div class="body-section">
         <br/>
         <div class="container grid-lg">
@@ -15,16 +16,7 @@
                             <table class="table table-striped">
                                 <tbody>
                                     {% for msg in fsc.messages %}
-                                        {% set trClass = msg.unmatched ? 'text-error' : '' %}
-                                        <tr class="{{ trClass }}">
-                                            <td class="text-right">
-                                                {% if msg.ischatbot %}<b>ChatBot</b>{% else %}{{ i18n.trans('you') }}{% endif %}:
-                                            </td>
-                                            <td>{{ msg.content | raw | nl2br }}</td>
-                                            <td class="text-right hide-xs">
-                                                <small>{{ msg.timesince() }}</small>
-                                            </td>
-                                        </tr>
+                                        {{ macros.chatMessage(msg, i18n) }}
                                     {% endfor %}
                                 </tbody>
                             </table>
@@ -44,7 +36,24 @@
     </div>
 {% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('node_modules/jquery/dist/jquery.min.js') }}"></script>
-{% endblock %}
+{% macro chatMessage(msg, i18n) %}
+    {% set trClass = msg.unmatched ? 'text-error' : '' %}
+    <tr class="{{ trClass }}">
+        <td class="text-right">
+            {% if msg.ischatbot %}<b>ChatBot</b>{% else %}{{ i18n.trans('you') }}{% endif %}:
+        </td>
+        <td>
+            {{ msg.content | raw | nl2br }}
+            {% set chatVars = msg.getChatVars() %}
+            {% if chatVars.link %}
+                <br/><b>{{ i18n.trans('options') }}</b>:
+            {% endif %}
+            {% if chatVars.link %}
+                <a href="{{ chatVars.link }}" target="_blank" class="btn">link</a>
+            {% endif %}
+        </td>
+        <td class="text-right hide-xs">
+            <small>{{ msg.timesince() }}</small>
+        </td>
+    </tr>
+{% endmacro %}

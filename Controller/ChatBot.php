@@ -100,6 +100,10 @@ class ChatBot extends PortalController
         $this->messages = array_reverse($chatMessage->all($where, ['creationtime' => 'DESC']));
     }
 
+    /**
+     * 
+     * @return ChatSession
+     */
     protected function getChatSession()
     {
         if (isset($this->session)) {
@@ -129,21 +133,30 @@ class ChatBot extends PortalController
      *
      * @param string $content
      * @param bool   $unmatched
-     * @param bool   $isChatbot
+     * @param array  $response
      */
-    protected function newChatMessage(string $content, bool $unmatched = false, bool $isChatbot = false)
+    protected function newChatMessage($content, $unmatched = false, $response = [])
     {
         $chatMessage = new ChatMessage();
         $chatMessage->content = $content;
         $chatMessage->idchat = $this->session->idchat;
-        $chatMessage->ischatbot = $isChatbot;
         $chatMessage->unmatched = $unmatched;
 
-        if ($isChatbot) {
-            $chatMessage->creationtime++;
-        } else {
+        if (empty($response)) {
             $chatMessage->idcontacto = is_null($this->contact) ? null : $this->contact->idcontacto;
             $this->session->content = $content;
+        } else {
+            $chatMessage->ischatbot = true;
+            $chatMessage->creationtime++;
+
+            /// save chat vars
+            $chatVars = [];
+            foreach ($response as $key => $value) {
+                if (!empty($value) && !in_array($key, ['text', 'unknown'])) {
+                    $chatVars[$key] = $value;
+                }
+            }
+            $chatMessage->setChatVars($chatVars);
         }
 
         if ($chatMessage->save()) {
@@ -165,10 +178,14 @@ class ChatBot extends PortalController
             return;
         }
 
-        $this->newChatMessage($userInput);
-
+        /// ask ChatEngine
         $engine = new ChatEngine();
         $response = $engine->ask($userInput);
-        $this->newChatMessage($response['text'], $response['unknown'], true);
+
+        /// save user input
+        $this->newChatMessage($userInput, $response['unknown']);
+
+        /// save chat answer
+        $this->newChatMessage($response['text'], $response['unknown'], $response);
     }
 }

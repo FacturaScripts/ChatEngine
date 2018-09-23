@@ -7,6 +7,10 @@
 -->
 <table>
     <column>
+        <name>chatvars</name>
+        <type>text</type>
+    </column>
+    <column>
         <name>content</name>
         <type>text</type>
     </column>

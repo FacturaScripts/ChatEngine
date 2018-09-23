@@ -37,6 +37,7 @@ class ChatEngine
     public function ask($question)
     {
         $response = [
+            'link' => '',
             'match' => 0,
             'text' => 'Lo siento, no puedo entenderte.',
             'unknown' => true,

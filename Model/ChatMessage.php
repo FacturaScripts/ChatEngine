@@ -32,6 +32,12 @@ class ChatMessage extends Base\ModelClass
     use Base\ModelTrait;
 
     /**
+     *
+     * @var string
+     */
+    public $chatvars;
+
+    /**
      * Message content.
      *
      * @var string
@@ -90,6 +96,19 @@ class ChatMessage extends Base\ModelClass
         $this->unmatched = false;
     }
 
+    /**
+     * 
+     * @return array
+     */
+    public function getChatVars()
+    {
+        return json_decode($this->chatvars, true);
+    }
+
+    /**
+     * 
+     * @return string
+     */
     public function install()
     {
         new ChatSession();
@@ -104,6 +123,15 @@ class ChatMessage extends Base\ModelClass
     public static function primaryColumn()
     {
         return 'idmessage';
+    }
+
+    /**
+     * 
+     * @param array $vars
+     */
+    public function setChatVars($vars)
+    {
+        $this->chatvars = json_encode($vars);
     }
 
     /**
