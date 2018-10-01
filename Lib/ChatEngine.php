@@ -18,6 +18,7 @@
  */
 namespace FacturaScripts\Plugins\ChatEngine\Lib;
 
+use FacturaScripts\Dinamic\Lib\WebPortal\SearchEngine;
 use FacturaScripts\Plugins\ChatEngine\Model\ChatKnowledge;
 
 /**
@@ -27,6 +28,8 @@ use FacturaScripts\Plugins\ChatEngine\Model\ChatKnowledge;
  */
 class ChatEngine
 {
+
+    const ALTERNATIVE_MESSAGE = "No tengo respuesta para eso en mi base de datos, pero he encontrado esto:\n\n";
 
     /**
      * 
@@ -67,6 +70,24 @@ class ChatEngine
      */
     protected function findAlternativeKnowledge(&$response, $question)
     {
-        ;
+        $query = $this->sanitizeQuery($question);
+        $searchEngine = new SearchEngine();
+        foreach ($searchEngine->search($query) as $result) {
+            $html = self::ALTERNATIVE_MESSAGE . $result['title'] . ' ' . $result['description'];
+            $response['text'] = $html;
+            $response['link'] = $result['link'];
+            break;
+        }
+    }
+
+    /**
+     * 
+     * @param string $input
+     *
+     * @return string
+     */
+    protected function sanitizeQuery($input)
+    {
+        return str_replace(['¿', '?'], ['', ''], $input);
     }
 }
