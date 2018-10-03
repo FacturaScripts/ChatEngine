@@ -126,6 +126,14 @@ class ChatEngine
             $response['certainty'] = $knowledge->certainty;
             $response['score'] += $match;
             $response['text'] = $knowledge->answer;
+            if (!empty($knowledge->link)) {
+                $response['buttons'][] = [
+                    'target' => '_blank',
+                    'text' => 'link',
+                    'url' => $knowledge->link,
+                ];
+            }
+
             $responses[] = $response;
         }
     }

@@ -275,10 +275,13 @@ class ChatBot extends PortalController
             return;
         }
 
+        $chatVars = $this->messages[$found]->getChatVars();
+
         $chatKnowledge = new ChatKnowledge();
         $chatKnowledge->answer = $this->messages[$found]->content;
-        $chatKnowledge->keywords = $this->findPreviousUserInput($id);
         $chatKnowledge->certainty = 1;
+        $chatKnowledge->keywords = $this->findPreviousUserInput($id);
+        $chatKnowledge->link = $chatVars['buttons'][0]['url'] ?? '';
         $chatKnowledge->save();
 
         /// save chat answer

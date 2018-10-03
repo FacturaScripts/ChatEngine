@@ -35,6 +35,10 @@
         <type>character varying(200)</type>
         <null>NO</null>
     </column>
+    <column>
+        <name>link</name>
+        <type>character varying(300)</type>
+    </column>
     <constraint>
         <name>chatknowledge_pkey</name>
         <type>PRIMARY KEY (idknowledge)</type>

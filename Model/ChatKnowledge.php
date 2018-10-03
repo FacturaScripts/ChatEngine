@@ -71,6 +71,12 @@ class ChatKnowledge extends Base\ModelClass
      * @var string
      */
     public $keywords;
+    
+    /**
+     *
+     * @var string
+     */
+    public $link;
 
     /**
      * Reset the values of all model properties.

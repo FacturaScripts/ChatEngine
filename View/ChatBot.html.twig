@@ -45,6 +45,9 @@
         <td>
             {{ msg.content | raw | nl2br }}
             {% set chatVars = msg.getChatVars() %}
+            {% if chatVars.buttons is not empty %}
+                <br/>
+            {% endif %}
             {% for button in chatVars.buttons %}
                 {% if button.action == 'vote-up' %}
                     &nbsp;

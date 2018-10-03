@@ -40,6 +40,9 @@
             <column name="answer" numcolumns="12" order="150">
                 <widget type="textarea" fieldname="answer" required="true" />
             </column>
+            <column name="link" order="160">
+                <widget type="text" fieldname="link" />
+            </column>
         </group>
     </columns>
 </view>
