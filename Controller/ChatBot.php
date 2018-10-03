@@ -170,6 +170,36 @@ class ChatBot extends PortalController
         return $this->session;
     }
 
+    protected function learnAction()
+    {
+        /// we need to find this message in the list
+        $id = $this->request->get('id', '');
+        $found = $this->findInMessages($id);
+        if ($found === 0) {
+            /// message not found
+            return;
+        }
+
+        $chatKnowledge = new ChatKnowledge();
+        $chatVars = $this->messages[$found]->getChatVars();
+        $userInput = $this->findPreviousUserInput($id);
+
+        /// already learned?
+        $where = [new DataBaseWhere('keywords', $userInput)];
+        if ($chatKnowledge->loadFromCode('', $where)) {
+            return;
+        }
+
+        $chatKnowledge->answer = $this->messages[$found]->content;
+        $chatKnowledge->certainty = 1;
+        $chatKnowledge->keywords = $userInput;
+        $chatKnowledge->link = $chatVars['buttons'][0]['url'] ?? '';
+        $chatKnowledge->save();
+
+        /// save chat answer
+        $this->newChatMessage($this->i18n->trans('thanks'), ['certainty' => 100], true);
+    }
+
     /**
      * Saves new chat message (answer or reply).
      *
@@ -216,6 +246,10 @@ class ChatBot extends PortalController
     {
         $action = $this->request->get('action', '');
         switch ($action) {
+            case 'learn':
+                $this->learnAction();
+                return;
+
             case 'vote-down':
                 $this->voteDownAction();
                 return;
@@ -263,6 +297,23 @@ class ChatBot extends PortalController
 
         /// save chat answer
         $this->newChatMessage($response['text'], $response, true);
+
+        /// update certain?
+        if (!isset($chatVars['idknowledge'])) {
+            return;
+        }
+
+        $chatKnowledge = new ChatKnowledge();
+        if (!$chatKnowledge->loadFromCode($chatVars['idknowledge'])) {
+            return;
+        }
+
+        $chatKnowledge->certainty--;
+        if ($chatKnowledge->certainty <= 0) {
+            $chatKnowledge->delete();
+        } else {
+            $chatKnowledge->save();
+        }
     }
 
     protected function voteUpAction()
@@ -275,22 +326,13 @@ class ChatBot extends PortalController
             return;
         }
 
-        $chatKnowledge = new ChatKnowledge();
         $chatVars = $this->messages[$found]->getChatVars();
-        $userInput = $this->findPreviousUserInput($id);
-
-        /// already voted?
-        $where = [new DataBaseWhere('keywords', $userInput)];
-        if ($chatKnowledge->loadFromCode('', $where)) {
+        $chatKnowledge = new ChatKnowledge();
+        if (!$chatKnowledge->loadFromCode($chatVars['idknowledge'])) {
             return;
         }
 
-
-
-        $chatKnowledge->answer = $this->messages[$found]->content;
-        $chatKnowledge->certainty = 1;
-        $chatKnowledge->keywords = $userInput;
-        $chatKnowledge->link = $chatVars['buttons'][0]['url'] ?? '';
+        $chatKnowledge->certainty++;
         $chatKnowledge->save();
 
         /// save chat answer

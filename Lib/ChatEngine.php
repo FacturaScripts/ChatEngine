@@ -51,10 +51,7 @@ class ChatEngine
         $responses = [];
         $this->findAnswer = $findNum;
         $this->findKnowledge($responses, $question);
-
-        if (empty($responses)) {
-            $this->findAlternativeKnowledge($responses, $question);
-        }
+        $this->findAlternativeKnowledge($responses, $question);
 
         /// sort by certainty and score
         usort($responses, function($item1, $item2) {
@@ -97,7 +94,7 @@ class ChatEngine
                     'url' => $result['link'],
                 ];
                 $response['buttons'][] = [
-                    'action' => 'vote-up'
+                    'action' => 'learn'
                 ];
                 $response['buttons'][] = [
                     'action' => 'vote-down'
@@ -124,6 +121,7 @@ class ChatEngine
 
             $response = $this->newResponse();
             $response['certainty'] = $knowledge->certainty;
+            $response['idknowledge'] = $knowledge->idknowledge;
             $response['score'] += $match;
             $response['text'] = $knowledge->answer;
             if (!empty($knowledge->link)) {
@@ -133,6 +131,13 @@ class ChatEngine
                     'url' => $knowledge->link,
                 ];
             }
+
+            $response['buttons'][] = [
+                'action' => 'vote-up'
+            ];
+            $response['buttons'][] = [
+                'action' => 'vote-down'
+            ];
 
             $responses[] = $response;
         }
@@ -144,7 +149,7 @@ class ChatEngine
 
         $webSearch = new WebSearch();
         $where = [new DataBaseWhere('numresults', 0, '>')];
-        foreach ($webSearch->all($where, ['visitcount' => 'DESC']) as $search) {
+        foreach ($webSearch->all($where, ['visitcount' => 'DESC'], 0, 100) as $search) {
             if (false !== stripos($question, $search->query)) {
                 $keys[] = $search->query;
             }
@@ -164,7 +169,7 @@ class ChatEngine
             'certainty' => 0,
             'findAnswer' => $this->findAnswer,
             'score' => 0,
-            'text' => 'Lo siento, no puedo entenderte.',
+            'text' => 'Lo siento, no puedo entenderle :-(',
         ];
     }
 }
