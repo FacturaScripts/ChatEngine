@@ -27,8 +27,8 @@
         <column name="content" order="110">
             <widget type="text" fieldname="content" />
         </column>
-        <column name="unmatched" display="center" order="120">
-            <widget type="checkbox" fieldname="unmatched" />
+        <column name="certainty" display="right" order="120">
+            <widget type="number" fieldname="certainty" decimal="0" />
         </column>
         <column name="chatbot" display="center" order="130">
             <widget type="checkbox" fieldname="ischatbot" />
@@ -39,7 +39,7 @@
     </columns>
     <rows>
         <row type="status" fieldname="ischatbot">
-            <option color="table-warning">1</option>
+            <option color="warning">1</option>
         </row>
     </rows>
 </view>

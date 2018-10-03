@@ -33,7 +33,10 @@
         <column name="answer" order="130">
             <widget type="textarea" fieldname="answer" />
         </column>
-        <column name="date" display="right" order="140">
+        <column name="certainty" display="right" order="140">
+            <widget type="number" fieldname="certainty" decimal="0" />
+        </column>
+        <column name="date" display="right" order="150">
             <widget type="date" fieldname="creationdate" />
         </column>
     </columns>

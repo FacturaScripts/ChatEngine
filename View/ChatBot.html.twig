@@ -37,7 +37,7 @@
 {% endblock %}
 
 {% macro chatMessage(msg, i18n) %}
-    {% set trClass = msg.unmatched ? 'text-error' : '' %}
+    {% set trClass = msg.certainty < 1 ? 'text-error' : '' %}
     <tr class="{{ trClass }}">
         <td class="text-right">
             {% if msg.ischatbot %}<b>ChatBot</b>{% else %}{{ i18n.trans('you') }}{% endif %}:

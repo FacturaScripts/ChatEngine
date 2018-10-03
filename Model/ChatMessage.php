@@ -33,6 +33,12 @@ class ChatMessage extends Base\ModelClass
 
     /**
      *
+     * @var int
+     */
+    public $certainty;
+
+    /**
+     *
      * @var string
      */
     public $chatvars;
@@ -79,21 +85,14 @@ class ChatMessage extends Base\ModelClass
     public $ischatbot;
 
     /**
-     * To indentify unmatched messages. Messages with unknown response.
-     *
-     * @var bool
-     */
-    public $unmatched;
-
-    /**
      * Reset the values of all model properties.
      */
     public function clear()
     {
         parent::clear();
+        $this->certainty = 0;
         $this->creationtime = date('d-m-Y H:i:s');
         $this->ischatbot = false;
-        $this->unmatched = false;
     }
 
     /**

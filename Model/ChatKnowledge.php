@@ -44,6 +44,12 @@ class ChatKnowledge extends Base\ModelClass
     public $bannedwords;
 
     /**
+     *
+     * @var int
+     */
+    public $certainty;
+
+    /**
      * Creation date.
      *
      * @var int
@@ -69,6 +75,7 @@ class ChatKnowledge extends Base\ModelClass
     public function clear()
     {
         parent::clear();
+        $this->certainty = 100;
         $this->creationdate = date('d-m-Y');
     }
 

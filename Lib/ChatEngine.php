@@ -18,8 +18,10 @@
  */
 namespace FacturaScripts\Plugins\ChatEngine\Lib;
 
+use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Dinamic\Lib\WebPortal\SearchEngine;
 use FacturaScripts\Plugins\ChatEngine\Model\ChatKnowledge;
+use FacturaScripts\Plugins\webportal\Model\WebSearch;
 
 /**
  * Description of ChatEngine
@@ -39,55 +41,102 @@ class ChatEngine
      */
     public function ask($question)
     {
-        $response = [
-            'link' => '',
-            'match' => 0,
-            'text' => 'Lo siento, no puedo entenderte.',
-            'unknown' => true,
-        ];
+        $responses = [];
+        $this->findKnowledge($responses, $question);
 
+        if (empty($responses)) {
+            $this->findAlternativeKnowledge($responses, $question);
+        }
+
+        /// sort by certainty and score
+        usort($responses, function($item1, $item2) {
+            if ($item1['certainty'] == $item2['certainty']) {
+                if ($item1['score'] == $item2['score']) {
+                    return 0;
+                } else if ($item1['score'] > $item2['score']) {
+                    return -1;
+                }
+
+                return 1;
+            } else if ($item1['certainty'] > $item2['certainty']) {
+                return -1;
+            }
+
+            return 1;
+        });
+
+        return empty($responses) ? $this->newResponse() : $responses[0];
+    }
+
+    /**
+     * 
+     * @param array  $responses
+     * @param string $question
+     */
+    protected function findAlternativeKnowledge(&$responses, $question)
+    {
+        $searchEngine = new SearchEngine();
+        foreach ($this->matchWebSearches($question) as $key) {
+            foreach ($searchEngine->search($key) as $result) {
+                $html = self::ALTERNATIVE_MESSAGE . $result['title'] . ' ' . $result['description'];
+
+                $response = $this->newResponse();
+                $response['link'] = $result['link'];
+                $response['score'] -= $result['position'];
+                $response['text'] = $html;
+                $responses[] = $response;
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param array  $responses
+     * @param string $question
+     */
+    protected function findKnowledge(&$responses, $question)
+    {
         $chatKnowledge = new ChatKnowledge();
-        foreach ($chatKnowledge->all() as $knowledge) {
+        foreach ($chatKnowledge->all([], [], 0, 0) as $knowledge) {
             $match = $knowledge->match($question);
-            if ($match > $response['match']) {
-                $response['match'] = $match;
-                $response['text'] = $knowledge->answer;
-                $response['unknown'] = false;
+            if ($match === 0) {
+                continue;
+            }
+
+            $response = $this->newResponse();
+            $response['certainty'] = $knowledge->certainty;
+            $response['score'] += $match;
+            $response['text'] = $knowledge->answer;
+            $responses[] = $response;
+        }
+    }
+
+    protected function matchWebSearches($question)
+    {
+        $keys = [];
+
+        $webSearch = new WebSearch();
+        $where = [new DataBaseWhere('numresults', 0, '>')];
+        foreach ($webSearch->all($where, ['visitcount' => 'DESC']) as $search) {
+            if (false !== stripos($question, $search->query)) {
+                $keys[] = $search->query;
             }
         }
 
-        if ($response['unknown']) {
-            $this->findAlternativeKnowledge($response, $question);
-        }
-
-        return $response;
+        return $keys;
     }
 
     /**
      * 
-     * @param array  $response
-     * @param string $question
+     * @return array
      */
-    protected function findAlternativeKnowledge(&$response, $question)
+    protected function newResponse()
     {
-        $query = $this->sanitizeQuery($question);
-        $searchEngine = new SearchEngine();
-        foreach ($searchEngine->search($query) as $result) {
-            $html = self::ALTERNATIVE_MESSAGE . $result['title'] . ' ' . $result['description'];
-            $response['text'] = $html;
-            $response['link'] = $result['link'];
-            break;
-        }
-    }
-
-    /**
-     * 
-     * @param string $input
-     *
-     * @return string
-     */
-    protected function sanitizeQuery($input)
-    {
-        return str_replace(['¿', '?'], ['', ''], $input);
+        return [
+            'certainty' => 0,
+            'link' => '',
+            'score' => 0,
+            'text' => 'Lo siento, no puedo entenderte.',
+        ];
     }
 }

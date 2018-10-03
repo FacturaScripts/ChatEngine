@@ -31,10 +31,13 @@
             <column name="bannedwords" order="120">
                 <widget type="text" fieldname="bannedwords" />
             </column>
-            <column name="date" order="130">
+            <column name="certainty" order="130">
+                <widget type="number" fieldname="certainty" />
+            </column>
+            <column name="date" order="140">
                 <widget type="date" fieldname="creationdate" readonly="true" />
             </column>
-            <column name="answer" numcolumns="12" order="140">
+            <column name="answer" numcolumns="12" order="150">
                 <widget type="textarea" fieldname="answer" required="true" />
             </column>
         </group>

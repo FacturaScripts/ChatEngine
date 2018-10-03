@@ -7,6 +7,10 @@
 -->
 <table>
     <column>
+        <name>certainty</name>
+        <type>integer</type>
+    </column>
+    <column>
         <name>chatvars</name>
         <type>text</type>
     </column>
@@ -36,12 +40,6 @@
     </column>
     <column>
         <name>ischatbot</name>
-        <type>boolean</type>
-        <null>NO</null>
-        <default>false</default>
-    </column>
-    <column>
-        <name>unmatched</name>
         <type>boolean</type>
         <null>NO</null>
         <default>false</default>

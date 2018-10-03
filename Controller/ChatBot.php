@@ -132,31 +132,31 @@ class ChatBot extends PortalController
      * Saves new chat message (answer or reply).
      *
      * @param string $content
-     * @param bool   $unmatched
      * @param array  $response
+     * @param bool   $isChatbot
      */
-    protected function newChatMessage($content, $unmatched = false, $response = [])
+    protected function newChatMessage($content, $response = [], $isChabot = true)
     {
         $chatMessage = new ChatMessage();
         $chatMessage->content = $content;
         $chatMessage->idchat = $this->session->idchat;
-        $chatMessage->unmatched = $unmatched;
+        $chatMessage->certainty = $response['certainty'];
 
-        if (empty($response)) {
-            $chatMessage->idcontacto = is_null($this->contact) ? null : $this->contact->idcontacto;
-            $this->session->content = $content;
-        } else {
+        if ($isChabot) {
             $chatMessage->ischatbot = true;
             $chatMessage->creationtime++;
 
             /// save chat vars
             $chatVars = [];
             foreach ($response as $key => $value) {
-                if (!empty($value) && !in_array($key, ['text', 'unknown'])) {
+                if (!empty($value) && !in_array($key, ['text', 'certainty'])) {
                     $chatVars[$key] = $value;
                 }
             }
             $chatMessage->setChatVars($chatVars);
+        } else {
+            $chatMessage->idcontacto = is_null($this->contact) ? null : $this->contact->idcontacto;
+            $this->session->content = $content;
         }
 
         if ($chatMessage->save()) {
@@ -183,9 +183,9 @@ class ChatBot extends PortalController
         $response = $engine->ask($userInput);
 
         /// save user input
-        $this->newChatMessage($userInput, $response['unknown']);
+        $this->newChatMessage($userInput, $response, false);
 
         /// save chat answer
-        $this->newChatMessage($response['text'], $response['unknown'], $response);
+        $this->newChatMessage($response['text'], $response, true);
     }
 }
