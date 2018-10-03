@@ -31,6 +31,9 @@ class ChatKnowledge extends Base\ModelClass
 
     use Base\ModelTrait;
 
+    const MAX_LEVENSHTEIN_DISTANCE = 1;
+    const MAX_LEVENSHTEIN_LEN = 150;
+
     /**
      *
      * @var string
@@ -188,8 +191,13 @@ class ChatKnowledge extends Base\ModelClass
             return true;
         }
 
+        /// string too long
+        if (strlen($key) > self::MAX_LEVENSHTEIN_DISTANCE || strlen($text) > self::MAX_LEVENSHTEIN_DISTANCE) {
+            return false;
+        }
+
         $distance = levenshtein($text, $key);
-        return $distance == 1;
+        return $distance == self::MAX_LEVENSHTEIN_DISTANCE;
     }
 
     /**

@@ -34,14 +34,22 @@ class ChatEngine
     const ALTERNATIVE_MESSAGE = "No tengo respuesta para eso en mi base de datos, pero he encontrado esto:\n\n";
 
     /**
+     *
+     * @var int
+     */
+    private $findAnswer = 0;
+
+    /**
      * 
      * @param string $question
-     *
+     * @param int    $findNum
+     * 
      * @return array
      */
-    public function ask($question)
+    public function ask($question, $findNum = 0)
     {
         $responses = [];
+        $this->findAnswer = $findNum;
         $this->findKnowledge($responses, $question);
 
         if (empty($responses)) {
@@ -65,7 +73,7 @@ class ChatEngine
             return 1;
         });
 
-        return empty($responses) ? $this->newResponse() : $responses[0];
+        return count($responses) > $findNum ? $responses[$findNum] : $this->newResponse();
     }
 
     /**
@@ -81,9 +89,20 @@ class ChatEngine
                 $html = self::ALTERNATIVE_MESSAGE . $result['title'] . ' ' . $result['description'];
 
                 $response = $this->newResponse();
-                $response['link'] = $result['link'];
                 $response['score'] -= $result['position'];
                 $response['text'] = $html;
+                $response['buttons'][] = [
+                    'target' => '_blank',
+                    'text' => 'link',
+                    'url' => $result['link'],
+                ];
+                $response['buttons'][] = [
+                    'action' => 'vote-up'
+                ];
+                $response['buttons'][] = [
+                    'action' => 'vote-down'
+                ];
+
                 $responses[] = $response;
             }
         }
@@ -133,8 +152,9 @@ class ChatEngine
     protected function newResponse()
     {
         return [
+            'buttons' => [],
             'certainty' => 0,
-            'link' => '',
+            'findAnswer' => $this->findAnswer,
             'score' => 0,
             'text' => 'Lo siento, no puedo entenderte.',
         ];

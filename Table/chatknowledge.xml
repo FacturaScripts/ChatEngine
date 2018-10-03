@@ -26,8 +26,9 @@
     </column>
     <column>
         <name>idknowledge</name>
-        <type>integer</type>
+        <type>serial</type>
         <null>NO</null>
+        <default>nextval('chatknowledge_idknowledge_seq'::regclass)</default>
     </column>
     <column>
         <name>keywords</name>

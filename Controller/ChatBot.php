@@ -21,6 +21,7 @@ namespace FacturaScripts\Plugins\ChatEngine\Controller;
 use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
 use FacturaScripts\Dinamic\Lib\ChatEngine;
 use FacturaScripts\Plugins\webportal\Lib\WebPortal\PortalController;
+use FacturaScripts\Plugins\ChatEngine\Model\ChatKnowledge;
 use FacturaScripts\Plugins\ChatEngine\Model\ChatMessage;
 use FacturaScripts\Plugins\ChatEngine\Model\ChatSession;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -87,6 +88,47 @@ class ChatBot extends PortalController
         $this->setTemplate('ChatBot');
         $this->getChatMessages();
         $this->processChat();
+    }
+
+    /**
+     * 
+     * @param string $id
+     *
+     * @return int
+     */
+    protected function findInMessages($id)
+    {
+        $found = 0;
+        foreach ($this->messages as $key => $msg) {
+            if ($msg->idmessage == $id) {
+                $found = $key;
+                break;
+            }
+        }
+
+        return $found;
+    }
+
+    /**
+     * 
+     * @param string $id
+     *
+     * @return string
+     */
+    protected function findPreviousUserInput($id)
+    {
+        $userInput = '';
+        foreach ($this->messages as $key => $msg) {
+            if ($msg->idmessage == $id) {
+                break;
+            }
+
+            if (!$msg->ischatbot) {
+                $userInput = $msg->content;
+            }
+        }
+
+        return $userInput;
     }
 
     /**
@@ -172,6 +214,17 @@ class ChatBot extends PortalController
      */
     protected function processChat()
     {
+        $action = $this->request->get('action', '');
+        switch ($action) {
+            case 'vote-down':
+                $this->voteDownAction();
+                return;
+
+            case 'vote-up':
+                $this->voteUpAction();
+                return;
+        }
+
         $userInput = $this->request->request->get('question', '');
         if (empty($userInput)) {
             /// no message
@@ -187,5 +240,48 @@ class ChatBot extends PortalController
 
         /// save chat answer
         $this->newChatMessage($response['text'], $response, true);
+    }
+
+    protected function voteDownAction()
+    {
+        /// we need to find this message in the list
+        $id = $this->request->get('id', '');
+        $found = $this->findInMessages($id);
+        if ($found === 0) {
+            /// message not found
+            return;
+        }
+
+        $userInput = $this->findPreviousUserInput($id);
+        $chatVars = $this->messages[$found]->getChatVars();
+        $findAnswer = $chatVars['findAnswer'] ?? 0;
+        $findAnswer++;
+
+        /// ask ChatEngine
+        $engine = new ChatEngine();
+        $response = $engine->ask($userInput, $findAnswer);
+
+        /// save chat answer
+        $this->newChatMessage($response['text'], $response, true);
+    }
+
+    protected function voteUpAction()
+    {
+        /// we need to find this message in the list
+        $id = $this->request->get('id', '');
+        $found = $this->findInMessages($id);
+        if ($found === 0) {
+            /// message not found
+            return;
+        }
+
+        $chatKnowledge = new ChatKnowledge();
+        $chatKnowledge->answer = $this->messages[$found]->content;
+        $chatKnowledge->keywords = $this->findPreviousUserInput($id);
+        $chatKnowledge->certainty = 1;
+        $chatKnowledge->save();
+
+        /// save chat answer
+        $this->newChatMessage($this->i18n->trans('thanks'), ['certainty' => 100], true);
     }
 }

@@ -45,12 +45,22 @@
         <td>
             {{ msg.content | raw | nl2br }}
             {% set chatVars = msg.getChatVars() %}
-            {% if chatVars.link %}
-                <br/><b>{{ i18n.trans('options') }}</b>:
-            {% endif %}
-            {% if chatVars.link %}
-                <a href="{{ chatVars.link }}" target="_blank" class="btn">link</a>
-            {% endif %}
+            {% for button in chatVars.buttons %}
+                {% if button.action == 'vote-up' %}
+                    &nbsp;
+                    <a href="?action=vote-up&id={{ msg.idmessage }}" class="btn">
+                        <i class="fas fa-thumbs-up"></i>
+                    </a>
+                {% elseif button.action == 'vote-down' %}
+                    <a href="?action=vote-down&id={{ msg.idmessage }}" class="btn">
+                        <i class="fas fa-thumbs-down"></i>
+                    </a>
+                {% else %}
+                    <a href="{{ button.url }}" target="{{ button.target }}" class="btn">
+                        {{ i18n.trans(button.text) }}
+                    </a>
+                {% endif %}
+            {% endfor %}
         </td>
         <td class="text-right hide-xs">
             <small>{{ msg.timesince() }}</small>
