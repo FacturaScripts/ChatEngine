@@ -150,7 +150,7 @@ class ChatEngine
             }
         }
 
-        return $keys;
+        return empty($keys) ? [$question] : $keys;
     }
 
     /**

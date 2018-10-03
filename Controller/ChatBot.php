@@ -275,12 +275,21 @@ class ChatBot extends PortalController
             return;
         }
 
-        $chatVars = $this->messages[$found]->getChatVars();
-
         $chatKnowledge = new ChatKnowledge();
+        $chatVars = $this->messages[$found]->getChatVars();
+        $userInput = $this->findPreviousUserInput($id);
+
+        /// already voted?
+        $where = [new DataBaseWhere('keywords', $userInput)];
+        if ($chatKnowledge->loadFromCode('', $where)) {
+            return;
+        }
+
+
+
         $chatKnowledge->answer = $this->messages[$found]->content;
         $chatKnowledge->certainty = 1;
-        $chatKnowledge->keywords = $this->findPreviousUserInput($id);
+        $chatKnowledge->keywords = $userInput;
         $chatKnowledge->link = $chatVars['buttons'][0]['url'] ?? '';
         $chatKnowledge->save();
 
