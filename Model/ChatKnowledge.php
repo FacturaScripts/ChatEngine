@@ -31,7 +31,6 @@ class ChatKnowledge extends Base\ModelClass
 
     use Base\ModelTrait;
 
-    const MAX_LEVENSHTEIN_DISTANCE = 1;
     const MAX_LEVENSHTEIN_LEN = 150;
 
     /**
@@ -71,7 +70,7 @@ class ChatKnowledge extends Base\ModelClass
      * @var string
      */
     public $keywords;
-    
+
     /**
      *
      * @var string
@@ -174,7 +173,8 @@ class ChatKnowledge extends Base\ModelClass
     }
 
     /**
-     * 
+     * Returns true if question is similar to word.
+     *
      * @param string $question
      * @param string $word
      *
@@ -182,28 +182,56 @@ class ChatKnowledge extends Base\ModelClass
      */
     protected function deepMatch($question, $word)
     {
+        /// question have spaces and word does not?
+        if (false !== strpos($question, ' ') && false === strpos($word, ' ')) {
+            foreach (explode(' ', $question) as $wordQuestion) {
+                if ($this->deepMatch($wordQuestion, $word)) {
+                    return true;
+                }
+            }
+        }
+
+        /// sanitice strings
         $changes = array('/à/' => 'a', '/á/' => 'a', '/â/' => 'a', '/ã/' => 'a', '/ä/' => 'a',
             '/å/' => 'a', '/æ/' => 'ae', '/ç/' => 'c', '/è/' => 'e', '/é/' => 'e', '/ê/' => 'e',
             '/ë/' => 'e', '/ì/' => 'i', '/í/' => 'i', '/î/' => 'i', '/ï/' => 'i', '/ð/' => 'd',
             '/ñ/' => 'n', '/ò/' => 'o', '/ó/' => 'o', '/ô/' => 'o', '/õ/' => 'o', '/ö/' => 'o',
             '/ő/' => 'o', '/ø/' => 'o', '/ù/' => 'u', '/ú/' => 'u', '/û/' => 'u', '/ü/' => 'u',
             '/ű/' => 'u', '/ý/' => 'y', '/þ/' => 'th', '/ÿ/' => 'y',
-            '/&quot;/' => '-'
         );
         $text = preg_replace(array_keys($changes), $changes, strtolower($question));
         $key = preg_replace(array_keys($changes), $changes, strtolower($word));
 
+        /// word is in question?
         if (false !== strpos($text, $key)) {
             return true;
         }
 
-        /// string too long
-        if (strlen($key) > self::MAX_LEVENSHTEIN_DISTANCE || strlen($text) > self::MAX_LEVENSHTEIN_DISTANCE) {
+        /// strings too long?
+        if (strlen($key) > self::MAX_LEVENSHTEIN_LEN || strlen($text) > self::MAX_LEVENSHTEIN_LEN) {
             return false;
         }
 
         $distance = levenshtein($text, $key);
-        return $distance == self::MAX_LEVENSHTEIN_DISTANCE;
+        return $distance <= $this->getMaxLevenshteinDistance($text, $key);
+    }
+
+    /**
+     * Returns the maximum levenshtein distance we can allow between two similar strings.
+     *
+     * @param string $word1
+     * @param string $word2
+     *
+     * @return int
+     */
+    protected function getMaxLevenshteinDistance($word1, $word2)
+    {
+        if (strlen($word1) < 5 || strlen($word2) < 5) {
+            return 1;
+        }
+
+        $min = min([strlen($word1), strlen($word2)]);
+        return (int) max([1, 20 * $min / 100]);
     }
 
     /**

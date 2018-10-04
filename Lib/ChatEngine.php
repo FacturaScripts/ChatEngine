@@ -145,7 +145,9 @@ class ChatEngine
 
     protected function matchWebSearches($question)
     {
-        $keys = [];
+        $keys = [
+            trim($question)
+        ];
 
         $webSearch = new WebSearch();
         $where = [new DataBaseWhere('numresults', 0, '>')];
@@ -155,7 +157,7 @@ class ChatEngine
             }
         }
 
-        return empty($keys) ? [$question] : $keys;
+        return $keys;
     }
 
     /**
