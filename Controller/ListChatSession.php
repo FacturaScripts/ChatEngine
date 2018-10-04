@@ -65,5 +65,8 @@ class ListChatSession extends ExtendedController\ListController
 
         /// knowledge
         $this->addView('ListChatKnowledge', 'ChatKnowledge', 'chat-knowledge', 'fa-database');
+        $this->addSearchFields('ListChatKnowledge', ['keywords', 'bannedwords', 'answer']);
+        $this->addOrderBy('ListChatKnowledge', ['creationdate'], 'date', 2);
+        $this->addOrderBy('ListChatKnowledge', ['certainty'], 'certainty');
     }
 }
