@@ -40,7 +40,7 @@ class EditChatSession extends ExtendedController\PanelController
         $pageData['title'] = 'chat-message';
         $pageData['menu'] = 'web';
         $pageData['showonmenu'] = false;
-        $pageData['icon'] = 'fa-comment-dots';
+        $pageData['icon'] = 'fas fa-comment-dots';
 
         return $pageData;
     }
@@ -50,8 +50,8 @@ class EditChatSession extends ExtendedController\PanelController
      */
     protected function createViews()
     {
-        $this->addEditView('EditChatSession', 'ChatSession', 'chat-session', 'fa-comment-dots');
-        $this->addListView('ListChatMessage', 'ChatMessage', 'chat-messages', 'fa-comments');
+        $this->addEditView('EditChatSession', 'ChatSession', 'chat-session', 'fas fa-comment-dots');
+        $this->addListView('ListChatMessage', 'ChatMessage', 'chat-messages', 'fas fa-comments');
 
         $this->views['ListChatMessage']->disableColumn('code', true);
     }

@@ -38,7 +38,7 @@ class ListChatSession extends ExtendedController\ListController
         $pageData = parent::getPageData();
         $pageData['title'] = 'chat-messages';
         $pageData['menu'] = 'web';
-        $pageData['icon'] = 'fa-comments';
+        $pageData['icon'] = 'fas fa-comments';
 
         return $pageData;
     }
@@ -49,13 +49,13 @@ class ListChatSession extends ExtendedController\ListController
     protected function createViews()
     {
         /// sessions
-        $this->addView('ListChatSession', 'ChatSession', 'chat-sessions', 'fa-comment-dots');
+        $this->addView('ListChatSession', 'ChatSession', 'chat-sessions', 'fas fa-comment-dots');
         $this->addOrderBy('ListChatSession', ['idchat'], 'code');
         $this->addOrderBy('ListChatSession', ['creationtime'], 'date', 2);
         $this->addSearchFields('ListChatSession', ['idchat']);
 
         /// messages
-        $this->addView('ListChatMessage', 'ChatMessage', 'chat-messages', 'fa-comments');
+        $this->addView('ListChatMessage', 'ChatMessage', 'chat-messages', 'fas fa-comments');
         $this->addSearchFields('ListChatMessage', ['content']);
         $this->addOrderBy('ListChatMessage', ['idchat'], 'code');
         $this->addOrderBy('ListChatMessage', ['creationtime'], 'date', 2);
@@ -64,7 +64,7 @@ class ListChatSession extends ExtendedController\ListController
         $this->addFilterCheckbox('ListChatMessage', 'nochatbot', 'human', 'ischatbot', true);
 
         /// knowledge
-        $this->addView('ListChatKnowledge', 'ChatKnowledge', 'chat-knowledge', 'fa-database');
+        $this->addView('ListChatKnowledge', 'ChatKnowledge', 'chat-knowledge', 'fas fa-database');
         $this->addSearchFields('ListChatKnowledge', ['keywords', 'bannedwords', 'answer']);
         $this->addOrderBy('ListChatKnowledge', ['creationdate'], 'date', 2);
         $this->addOrderBy('ListChatKnowledge', ['certainty'], 'certainty');

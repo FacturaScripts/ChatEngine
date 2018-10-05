@@ -57,7 +57,7 @@ class ChatBot extends PortalController
         $pageData = parent::getPageData();
         $pageData['title'] = 'chatbot';
         $pageData['menu'] = 'web';
-        $pageData['icon'] = 'fa-commenting-o';
+        $pageData['icon'] = 'fas fa-commenting-o';
 
         return $pageData;
     }

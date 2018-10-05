@@ -38,7 +38,7 @@ class EditChatKnowledge extends EditController
         $pageData['title'] = 'chat-knowledge';
         $pageData['menu'] = 'web';
         $pageData['showonmenu'] = false;
-        $pageData['icon'] = 'fa-database';
+        $pageData['icon'] = 'fas fa-database';
 
         return $pageData;
     }
