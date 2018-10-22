@@ -57,8 +57,8 @@
                     </a>
                 {% else %}
                     <br/>
-                    <a href="{{ button.url }}" target="{{ button.target }}" class="btn btn-sm">
-                        {{ i18n.trans(button.text) }}
+                    <a href="{{ button.url }}" target="{{ button.target }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-external-link-alt fa-fw"></i> {{ i18n.trans(button.text) }}
                     </a>
                 {% endif %}
             {% endfor %}

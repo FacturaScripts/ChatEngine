@@ -78,6 +78,12 @@ class ChatKnowledge extends Base\ModelClass
     public $link;
 
     /**
+     *
+     * @var bool
+     */
+    public $voting;
+
+    /**
      * Reset the values of all model properties.
      */
     public function clear()
@@ -85,6 +91,7 @@ class ChatKnowledge extends Base\ModelClass
         parent::clear();
         $this->certainty = 100;
         $this->creationdate = date('d-m-Y');
+        $this->voting = false;
     }
 
     /**

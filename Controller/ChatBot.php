@@ -180,6 +180,8 @@ class ChatBot extends PortalController
             return;
         }
 
+        $this->removeVoteButtons($found);
+
         $chatKnowledge = new ChatKnowledge();
         $chatVars = $this->messages[$found]->getChatVars();
         $userInput = $this->findPreviousUserInput($id);
@@ -192,6 +194,7 @@ class ChatBot extends PortalController
 
         $chatKnowledge->answer = $this->messages[$found]->content;
         $chatKnowledge->certainty = 1;
+        $chatKnowledge->voting = true;
         $chatKnowledge->keywords = $userInput;
         $chatKnowledge->link = $chatVars['buttons'][0]['url'] ?? '';
         $chatKnowledge->save();
@@ -276,6 +279,23 @@ class ChatBot extends PortalController
         $this->newChatMessage($response['text'], $response, true);
     }
 
+    /**
+     * 
+     * @param string $messageKey
+     */
+    protected function removeVoteButtons($messageKey)
+    {
+        $chatVars = $this->messages[$messageKey]->getChatVars();
+        foreach ($chatVars['buttons'] as $key => $button) {
+            if (isset($button['action'])) {
+                unset($chatVars['buttons'][$key]);
+            }
+        }
+
+        $this->messages[$messageKey]->setChatVars($chatVars);
+        $this->messages[$messageKey]->save();
+    }
+
     protected function voteDownAction()
     {
         /// we need to find this message in the list
@@ -285,6 +305,8 @@ class ChatBot extends PortalController
             /// message not found
             return;
         }
+
+        $this->removeVoteButtons($found);
 
         $userInput = $this->findPreviousUserInput($id);
         $chatVars = $this->messages[$found]->getChatVars();
@@ -325,6 +347,8 @@ class ChatBot extends PortalController
             /// message not found
             return;
         }
+
+        $this->removeVoteButtons($found);
 
         $chatVars = $this->messages[$found]->getChatVars();
         $chatKnowledge = new ChatKnowledge();

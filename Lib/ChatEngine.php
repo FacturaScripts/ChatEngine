@@ -132,12 +132,14 @@ class ChatEngine
                 ];
             }
 
-            $response['buttons'][] = [
-                'action' => 'vote-up'
-            ];
-            $response['buttons'][] = [
-                'action' => 'vote-down'
-            ];
+            if ($knowledge->voting) {
+                $response['buttons'][] = [
+                    'action' => 'vote-up'
+                ];
+                $response['buttons'][] = [
+                    'action' => 'vote-down'
+                ];
+            }
 
             $responses[] = $response;
         }
