@@ -7,6 +7,10 @@
 -->
 <table>
     <column>
+        <name>certainty</name>
+        <type>integer</type>
+    </column>
+    <column>
         <name>content</name>
         <type>text</type>
     </column>
@@ -28,6 +32,10 @@
     <column>
         <name>lastmodtime</name>
         <type>timestamp</type>
+    </column>
+    <column>
+        <name>messagesnumber</name>
+        <type>integer</type>
     </column>
     <constraint>
         <name>chatsessions_pkey</name>

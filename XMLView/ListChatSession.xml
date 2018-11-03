@@ -24,11 +24,30 @@
         <column name="code" order="100">
             <widget type="text" fieldname="idchat" onclick="EditChatSession" />
         </column>
-        <column name="content" order="110">
-            <widget type="text" fieldname="content" />
+        <column name="contact" order="110">
+            <widget type="autocomplete" fieldname="idcontacto" onclick="EditContacto">
+                <values source="contactos" fieldcode="idcontacto" fieldtitle="email"></values>
+            </widget>
         </column>
-        <column name="date" display="right" order="120">
+        <column name="content" order="120">
+            <widget type="textarea" fieldname="content" />
+        </column>
+        <column name="certainty" display="right" order="130">
+            <widget type="number" fieldname="certainty" decimal="0" />
+        </column>
+        <column name="messages-number" display="right" order="140">
+            <widget type="number" fieldname="messagesnumber" decimal="0" />
+        </column>
+        <column name="date" display="right" order="150">
             <widget type="date" fieldname="creationtime" />
         </column>
     </columns>
+    <rows>
+        <row type="status">
+            <option fieldname="certainty" color="success">&gt;80</option>
+            <option fieldname="certainty" color="warning">&gt;50</option>
+            <option fieldname="certainty" color="danger">&lt;50</option>
+            <option fieldname="messagesnumber" color="info">0</option>
+        </row>
+    </rows>
 </view>

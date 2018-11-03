@@ -33,6 +33,12 @@ class ChatSession extends Base\ModelClass
     use Base\ModelTrait;
 
     /**
+     *
+     * @var int
+     */
+    public $certainty;
+
+    /**
      * Message content.
      *
      * @var string
@@ -66,18 +72,28 @@ class ChatSession extends Base\ModelClass
     public $lastmodtime;
 
     /**
+     *
+     * @var int
+     */
+    public $messagesnumber;
+
+    /**
      * Reset the values of all model properties.
      */
     public function clear()
     {
         parent::clear();
+        $this->certainty = 100;
         $this->creationtime = date('d-m-Y H:i:s');
         $this->lastmodtime = date('d-m-Y H:i:s');
+        $this->messagesnumber = 0;
     }
 
     public function install()
     {
+        /// needes dependencies
         new Contacto();
+
         return parent::install();
     }
 

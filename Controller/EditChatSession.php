@@ -26,8 +26,17 @@ use FacturaScripts\Core\Lib\ExtendedController;
  *
  * @author Carlos García Gómez
  */
-class EditChatSession extends ExtendedController\PanelController
+class EditChatSession extends ExtendedController\EditController
 {
+
+    /**
+     * 
+     * @return string
+     */
+    public function getModelClassName()
+    {
+        return 'ChatSession';
+    }
 
     /**
      * Returns basic page attributes
@@ -50,9 +59,11 @@ class EditChatSession extends ExtendedController\PanelController
      */
     protected function createViews()
     {
-        $this->addEditView('EditChatSession', 'ChatSession', 'chat-session', 'fas fa-comment-dots');
-        $this->addListView('ListChatMessage', 'ChatMessage', 'chat-messages', 'fas fa-comments');
+        parent::createViews();
+        $this->setTabsPosition('bottom');
 
+        /// messages
+        $this->addListView('ListChatMessage', 'ChatMessage', 'chat-messages', 'fas fa-comments');
         $this->views['ListChatMessage']->disableColumn('code', true);
     }
 
@@ -65,14 +76,13 @@ class EditChatSession extends ExtendedController\PanelController
     protected function loadData($keyView, $view)
     {
         switch ($keyView) {
-            case 'EditChatSession':
-                $code = $this->request->get('code');
-                $view->loadData($code);
-                break;
-
             case 'ListChatMessage':
                 $idchat = $this->getViewModelValue('EditChatSession', 'idchat');
                 $view->loadData(false, [new DataBaseWhere('idchat', $idchat)], ['creationtime' => 'ASC']);
+                break;
+
+            default:
+                parent::loadData($keyView, $view);
                 break;
         }
     }

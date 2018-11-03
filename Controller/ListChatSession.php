@@ -52,6 +52,8 @@ class ListChatSession extends ExtendedController\ListController
         $this->addView('ListChatSession', 'ChatSession', 'chat-sessions', 'fas fa-comment-dots');
         $this->addOrderBy('ListChatSession', ['idchat'], 'code');
         $this->addOrderBy('ListChatSession', ['creationtime'], 'date', 2);
+        $this->addOrderBy('ListChatSession', ['certainty'], 'certainty');
+        $this->addOrderBy('ListChatSession', ['messagesnumber'], 'messages-number');
         $this->addSearchFields('ListChatSession', ['idchat']);
 
         /// messages

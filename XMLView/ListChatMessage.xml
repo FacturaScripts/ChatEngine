@@ -25,7 +25,7 @@
             <widget type="text" fieldname="idchat" onclick="EditChatSession" />
         </column>
         <column name="content" order="110">
-            <widget type="text" fieldname="content" />
+            <widget type="textarea" fieldname="content" />
         </column>
         <column name="certainty" display="right" order="120">
             <widget type="number" fieldname="certainty" decimal="0" />

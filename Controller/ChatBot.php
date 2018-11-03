@@ -92,6 +92,28 @@ class ChatBot extends PortalController
 
     /**
      * 
+     * @return int
+     */
+    protected function calculateCertainty()
+    {
+        if (count($this->messages) < 2) {
+            return 100;
+        }
+
+        $certainty = 0;
+        $number = 0;
+        foreach ($this->messages as $msg) {
+            if ($msg->ischatbot) {
+                $certainty += $msg->certainty;
+                $number++;
+            }
+        }
+
+        return (int) $certainty / $number;
+    }
+
+    /**
+     * 
      * @param string $id
      *
      * @return int
@@ -200,7 +222,7 @@ class ChatBot extends PortalController
         $chatKnowledge->save();
 
         /// save chat answer
-        $this->newChatMessage($this->i18n->trans('thanks'), ['certainty' => 100], true);
+        $this->newChatMessage(':-)', ['certainty' => 100], true);
     }
 
     /**
@@ -230,6 +252,7 @@ class ChatBot extends PortalController
             }
             $chatMessage->setChatVars($chatVars);
         } else {
+            $chatMessage->certainty = 100;
             $chatMessage->idcontacto = is_null($this->contact) ? null : $this->contact->idcontacto;
             $this->session->content = $content;
         }
@@ -237,7 +260,9 @@ class ChatBot extends PortalController
         if ($chatMessage->save()) {
             $this->messages[] = $chatMessage;
 
+            $this->session->certainty = $this->calculateCertainty();
             $this->session->lastmodtime = $chatMessage->creationtime;
+            $this->session->messagesnumber++;
             $this->session->save();
         }
     }
