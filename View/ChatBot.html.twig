@@ -47,12 +47,12 @@
             {% set chatVars = msg.getChatVars() %}
             {% for button in chatVars.buttons %}
                 {% if button.action == 'vote-up' or button.action == 'learn' %}
-                    &nbsp;
-                    <a href="?action={{ button.action }}&id={{ msg.idmessage }}" class="btn btn-sm">
+                    <a href="?action={{ button.action }}&id={{ msg.idmessage }}" class="btn btn-sm btn-success">
                         <i class="fas fa-thumbs-up"></i>
                     </a>
                 {% elseif button.action == 'vote-down' %}
-                    <a href="?action={{ button.action }}&id={{ msg.idmessage }}" class="btn btn-sm">
+                    &nbsp;
+                    <a href="?action={{ button.action }}&id={{ msg.idmessage }}" class="btn btn-sm btn-error">
                         <i class="fas fa-thumbs-down"></i>
                     </a>
                 {% else %}

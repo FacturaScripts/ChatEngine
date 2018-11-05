@@ -94,10 +94,10 @@ class ChatEngine
                     'url' => $result['link'],
                 ];
                 $response['buttons'][] = [
-                    'action' => 'learn'
+                    'action' => 'vote-down'
                 ];
                 $response['buttons'][] = [
-                    'action' => 'vote-down'
+                    'action' => 'learn'
                 ];
 
                 $responses[] = $response;
