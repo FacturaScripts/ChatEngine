@@ -63,7 +63,7 @@ class EditChatSession extends ExtendedController\EditController
         $this->setTabsPosition('bottom');
 
         /// messages
-        $this->addListView('ListChatMessage', 'ChatMessage', 'chat-messages', 'fas fa-comments');
+        $this->addEditListView('ListChatMessage', 'ChatMessage', 'chat-messages', 'fas fa-comments');
         $this->views['ListChatMessage']->disableColumn('code', true);
     }
 
