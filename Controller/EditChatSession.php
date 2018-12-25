@@ -46,7 +46,7 @@ class EditChatSession extends ExtendedController\EditController
     public function getPageData()
     {
         $pageData = parent::getPageData();
-        $pageData['title'] = 'chat-message';
+        $pageData['title'] = 'chat-session';
         $pageData['menu'] = 'web';
         $pageData['showonmenu'] = false;
         $pageData['icon'] = 'fas fa-comment-dots';

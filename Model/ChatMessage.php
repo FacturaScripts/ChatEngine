@@ -97,6 +97,17 @@ class ChatMessage extends Base\ModelClass
 
     /**
      * 
+     * @return ChatSession
+     */
+    public function getChatSession()
+    {
+        $chatSession = new ChatSession();
+        $chatSession->loadFromCode($this->idchat);
+        return $chatSession;
+    }
+
+    /**
+     * 
      * @return array
      */
     public function getChatVars()
@@ -110,7 +121,9 @@ class ChatMessage extends Base\ModelClass
      */
     public function install()
     {
+        /// needed dependencies
         new ChatSession();
+
         return parent::install();
     }
 
@@ -181,5 +194,18 @@ class ChatMessage extends Base\ModelClass
             $numberOfUnits = floor($finalTime / $unit);
             return $numberOfUnits . ' ' . $text . (($numberOfUnits > 1) ? 's' : '');
         }
+    }
+
+    /**
+     * 
+     * @param string $type
+     * @param string $list
+     *
+     * @return string
+     */
+    public function url(string $type = 'auto', string $list = 'List')
+    {
+        $chatSession = $this->getChatSession();
+        return $chatSession->url($type, $list);
     }
 }
